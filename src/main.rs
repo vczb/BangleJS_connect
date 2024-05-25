@@ -1,3 +1,4 @@
+use dbus::arg::messageitem::MessageItem;
 use dbus::blocking::Connection;
 use dbus::message::MatchRule;
 use std::error::Error;
@@ -9,9 +10,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     let rule = MatchRule::new_signal("org.freedesktop.DBus.Properties", "PropertiesChanged");
 
     conn.add_match(rule, move |_: (), _, msg| {
-        println!("Received signal: {:?}", msg);
-        let test = msg.get_items();
-        println!("test: {:?}", test);
+        let items = msg.get_items();
+
+        if let Some(MessageItem::Str(source)) = items.first() {
+            if source.contains("GattCharacteristic") {
+                println!("Received signal: {:?}", items);
+            }
+        }
+
         true
     })?;
 

@@ -4,6 +4,10 @@ use dbus::message::MatchRule;
 use std::error::Error;
 use std::time::Duration;
 
+fn unbox<T>(value: Box<T>) -> T {
+    *value
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let conn = Connection::new_system()?;
 
@@ -14,7 +18,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         if let Some(MessageItem::Str(source)) = items.first() {
             if source.contains("GattCharacteristic") {
-                println!("Received signal: {:?}", items);
+                if let Some(MessageItem::Dict(dict_items)) = items.get(1) {
+                    for (_key, value) in dict_items.iter() {
+                        println!("value: {:?}", value);
+                        if let MessageItem::Variant(variant) = value {
+                            println!("variant: {:?}", variant);
+                            if let MessageItem::Array(array) = unbox(variant.clone()) {
+                                println!("array: {:?}", array);
+                            }
+                        }
+                    }
+                }
             }
         }
 

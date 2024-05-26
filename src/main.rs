@@ -20,11 +20,19 @@ fn main() -> Result<(), Box<dyn Error>> {
             if source.contains("GattCharacteristic") {
                 if let Some(MessageItem::Dict(dict_items)) = items.get(1) {
                     for (_key, value) in dict_items.iter() {
-                        println!("value: {:?}", value);
+                        // println!("value: {:?}", value);
                         if let MessageItem::Variant(variant) = value {
-                            println!("variant: {:?}", variant);
+                            // println!("variant: {:?}", variant);
                             if let MessageItem::Array(array) = unbox(variant.clone()) {
-                                println!("array: {:?}", array);
+                                // println!("array: {:?}", array);
+                                let mut bytes = Vec::new();
+                                for byte in array.iter() {
+                                    if let MessageItem::Byte(b) = byte {
+                                        // println!("b: {:?}", b);
+                                        bytes.push(b);
+                                    }
+                                }
+                                println!("bytes: {:?}", bytes);
                             }
                         }
                     }

@@ -10,13 +10,11 @@ pub struct Drag {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Btn1 {
-    command: String,
-}
+pub struct Btn1 {}
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "event")]
-pub enum Command {
+pub enum Events {
     #[serde(rename = "drag")]
     Drag(Drag),
     #[serde(rename = "btn1")]

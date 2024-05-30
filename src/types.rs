@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct Drag {
     pub x: i32,
     pub y: i32,
@@ -9,12 +9,17 @@ pub struct Drag {
     pub dy: i32,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
+pub struct Touch {}
+
+#[derive(Serialize, Deserialize)]
 pub struct Btn1 {}
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
 #[serde(tag = "event")]
 pub enum Events {
+    #[serde(rename = "touch")]
+    Touch(Touch),
     #[serde(rename = "drag")]
     Drag(Drag),
     #[serde(rename = "btn1")]

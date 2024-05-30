@@ -1,4 +1,4 @@
-use actions::{handle_btn1, handle_drag};
+use actions::{handle_btn1, handle_drag, handle_touch};
 use dbus::blocking::Connection;
 use dbus::message::MatchRule;
 use std::error::Error;
@@ -26,15 +26,18 @@ fn main() -> Result<(), Box<dyn Error>> {
             match serde_json::from_str::<Events>(&string_data) {
                 Ok(event) => match event {
                     Events::Drag(drag) => {
-                        println!("Drag: {:?}", drag);
                         handle_drag(drag);
                     }
-                    Events::Btn1(btn1) => {
-                        println!("Btn1: {:?}", btn1);
+                    Events::Btn1(_btn1) => {
                         handle_btn1();
                     }
+                    Events::Touch(_touch) => {
+                        handle_touch();
+                    }
                 },
-                Err(e) => eprintln!("Failed to parse JSON: {:?}", e),
+                Err(_e) => {
+                    // eprintln!("Failed to parse JSON: {:?}", e)
+                }
             }
         }
 

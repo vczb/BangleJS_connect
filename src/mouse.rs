@@ -35,3 +35,11 @@ pub fn move_mouse(x: i32, y: i32) {
         .output()
         .expect("Failed to execute xdotool command");
 }
+
+pub fn click_mouse(button: &str) {
+    Command::new("xdotool")
+        .arg("click")
+        .arg(button)
+        .output()
+        .expect("Failed to execute xdotool command");
+}

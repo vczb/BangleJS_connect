@@ -1,17 +1,21 @@
 use actions::{handle_btn1, handle_drag, handle_touch};
+use bluetooth_pairing::pair_device;
 use dbus::blocking::Connection;
 use dbus::message::MatchRule;
 use std::error::Error;
 use std::time::Duration;
 use utils::{bytes_to_string, dbus_to_bytes};
-mod types;
 
 mod actions;
+mod bluetooth_pairing;
 mod mouse;
+mod types;
 mod utils;
 use types::Events;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let _ = pair_device();
+
     let conn = Connection::new_system()?;
 
     let rule = MatchRule::new_signal("org.freedesktop.DBus.Properties", "PropertiesChanged");

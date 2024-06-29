@@ -1,6 +1,7 @@
 use std::error::Error;
 
-use dbus_event_listener::event_listener;
+use bluetooth_pairing::pair_device;
+//use dbus_event_listener::event_listener;
 
 mod actions;
 mod bluetooth_pairing;
@@ -9,8 +10,14 @@ mod mouse;
 mod types;
 mod utils;
 
-fn main() -> Result<(), Box<dyn Error>> {
-    //let _ = pair_device();
+use btleplug::api::Peripheral;
 
-    event_listener()
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    if let Err(e) = pair_device().await {
+        println!("Error pairing device: {}", e);
+    }
+    //event_listener()
+
+    Ok(())
 }

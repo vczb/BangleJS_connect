@@ -1,8 +1,8 @@
 use actions::{handle_btn1, handle_drag, handle_touch};
 use ble_utils::{connect_device, find_light, is_device_connected};
+use btleplug::api::Manager as _;
 use btleplug::api::Peripheral;
-use btleplug::api::{bleuuid::BleUuid, Central, CentralEvent, Manager as _, ScanFilter};
-use btleplug::platform::{Adapter, Manager};
+use btleplug::platform::Manager;
 use futures::stream::StreamExt;
 use std::error::Error;
 use types::Events;
@@ -15,7 +15,6 @@ mod types;
 mod utils;
 
 const NOTIFY_CHARACTERISTIC_UUID: Uuid = Uuid::from_u128(0x6e400003_b5a3_f393_e0a9_e50e24dcca9e);
-// mod bluetooth_pairing;
 
 const DEVICE_NAME: &str = "Bangle";
 #[tokio::main]
@@ -46,6 +45,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("Checking characteristic {:?}", characteristic);
 
         // Subscribe to notifications from the characteristic with the selected UUID
+
         if characteristic.uuid == NOTIFY_CHARACTERISTIC_UUID {
             println!("Subscribing to characteristic {:?}", characteristic.uuid);
             bangle.subscribe(&characteristic).await?;

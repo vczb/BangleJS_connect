@@ -1,6 +1,6 @@
 use dbus::arg::messageitem::MessageItem;
 
-fn unbox<T>(value: Box<T>) -> T {
+pub fn unbox<T>(value: Box<T>) -> T {
     *value
 }
 

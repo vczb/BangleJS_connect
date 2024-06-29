@@ -103,6 +103,8 @@ async fn find_light(central: &Adapter) -> Option<Peripheral> {
                                 .iter()
                                 .any(|name| name.contains(DEVICE_NAME))
                             {
+                                //println!("");
+                                //dbg!(&p.characteristics());
                                 return Some(p);
                             }
                         }

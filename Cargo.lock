@@ -7,7 +7,6 @@ name = "BangleJS_connect"
 version = "0.1.0"
 dependencies = [
  "btleplug",
- "dbus",
  "futures",
  "log",
  "pretty_env_logger",

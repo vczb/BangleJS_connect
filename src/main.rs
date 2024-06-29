@@ -1,14 +1,15 @@
+use actions::{handle_btn1, handle_drag, handle_touch};
 use ble_utils::{connect_device, find_light, is_device_connected};
 use btleplug::api::Peripheral;
 use btleplug::api::{bleuuid::BleUuid, Central, CentralEvent, Manager as _, ScanFilter};
 use btleplug::platform::{Adapter, Manager};
-use dbus_event_listener::event_listener;
 use futures::stream::StreamExt;
 use std::error::Error;
+use types::Events;
+use utils::bytes_to_string;
 use uuid::Uuid;
 mod actions;
 mod ble_utils;
-mod dbus_event_listener;
 mod mouse;
 mod types;
 mod utils;
@@ -30,36 +31,53 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Find and connect to the Bangle device
     let bangle_wrap = find_light(&central, &DEVICE_NAME).await;
     let bangle = bangle_wrap.unwrap();
-    // let is_connected = is_device_connected(&bangle).await;
+    let is_connected = is_device_connected(&bangle).await;
     // dbg!(&bangle.characteristics());
 
-    // if !is_connected {
-    connect_device(&bangle).await?;
-    // }
+    if !is_connected {
+        connect_device(&bangle).await?;
+    } else {
+        // refresh the connection
+        bangle.discover_services().await?;
+    }
 
-    // BUG: We receive some data and the process stop, investigate
     // Iterate through characteristics of the Bangle device
-    // for characteristic in bangle.characteristics() {
-    //     println!("Checking characteristic {:?}", characteristic);
+    for characteristic in bangle.characteristics() {
+        println!("Checking characteristic {:?}", characteristic);
 
-    //     // Subscribe to notifications from the characteristic with the selected UUID
-    //     if characteristic.uuid == NOTIFY_CHARACTERISTIC_UUID {
-    //         println!("Subscribing to characteristic {:?}", characteristic.uuid);
-    //         bangle.subscribe(&characteristic).await?;
+        // Subscribe to notifications from the characteristic with the selected UUID
+        if characteristic.uuid == NOTIFY_CHARACTERISTIC_UUID {
+            println!("Subscribing to characteristic {:?}", characteristic.uuid);
+            bangle.subscribe(&characteristic).await?;
 
-    //         // Print the first 4 notifications received
-    //         let mut notification_stream = bangle.notifications().await?.take(4);
-    //         while let Some(data) = notification_stream.next().await {
-    //             println!(
-    //                 "Received data from {:?} [{:?}]: {:?}",
-    //                 DEVICE_NAME, data.uuid, data.value
-    //             );
-    //         }
-    //     }
-    // }
+            let mut notification_stream = bangle.notifications().await?;
 
-    // TODO: Revove dbus listener when btleplug implementation be done
-    let _ = event_listener();
+            // listen by notifications
+            while let Some(data) = notification_stream.next().await {
+                let value = data.value;
+                let string_data = bytes_to_string(value);
+
+                if !string_data.is_empty() {
+                    match serde_json::from_str::<Events>(&string_data) {
+                        Ok(event) => match event {
+                            Events::Drag(drag) => {
+                                handle_drag(drag);
+                            }
+                            Events::Btn1(_btn1) => {
+                                handle_btn1();
+                            }
+                            Events::Touch(_touch) => {
+                                handle_touch();
+                            }
+                        },
+                        Err(_e) => {
+                            // eprintln!("Failed to parse JSON: {:?}", e)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Ok(())
 }

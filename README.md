@@ -44,8 +44,7 @@ This project is a Rust-based application designed to interface with the Bangle J
 
 1. Download the Bangle JS 2 Companion App:
 
-   - Using a Chrome based browser visit the Bangle JS 2 app loader [here](https://vczb.github.io/BangleApps/?q=pcconn).
-   - Click on the connect button and pair with your Smartwatch.
+   - Visit the Bangle JS 2 app loader [here](https://vczb.github.io/BangleApps/?q=pcconn).
    - Download and install the PC Connect (pcconn) app on your Bangle JS 2 smartwatch.
 
 2. Restart the Smartwatch

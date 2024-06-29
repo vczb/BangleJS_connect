@@ -1,53 +1,10 @@
-use btleplug::api::{Central, Manager as _, Peripheral as _, ScanFilter};
-use btleplug::platform::{Adapter, Manager, Peripheral};
+use btleplug::api::{Central, Peripheral as _};
+use btleplug::platform::{Adapter, Peripheral};
 use std::error::Error;
 use std::time::Duration;
 use tokio::time;
 
-pub async fn pair_device() -> Result<Peripheral, Box<dyn Error>> {
-    // Create a new manager instance
-    let manager = Manager::new().await.map_err(|e| {
-        println!("Failed to create manager: {}", e);
-        Box::new(e) as Box<dyn Error>
-    })?;
-
-    // Get the first Bluetooth adapter
-    let adapters = manager.adapters().await?;
-    let central = adapters.into_iter().nth(0).ok_or_else(|| {
-        let err_msg = "No Bluetooth adapters found";
-        println!("{}", err_msg);
-        Box::<dyn Error>::from(err_msg)
-    })?;
-
-    // Start scanning for devices
-    central
-        .start_scan(ScanFilter::default())
-        .await
-        .map_err(|e| {
-            println!("Failed to start scan: {}", e);
-            Box::new(e) as Box<dyn Error>
-        })?;
-    println!("Scanning for devices...");
-    time::sleep(Duration::from_secs(2)).await;
-
-    // Find the device we're interested in
-    let light = find_light(&central).await.ok_or_else(|| {
-        println!("No device found!!!");
-        Box::<dyn Error>::from("Device not found")
-    })?;
-
-    // Check if already connected
-    if !light.is_connected().await? {
-        println!("Not connected, attempting to connect...");
-        connect_device(&light).await?;
-    } else {
-        println!("Already connected");
-    }
-
-    Ok(light)
-}
-
-async fn connect_device(light: &Peripheral) -> Result<bool, Box<dyn Error>> {
+pub async fn connect_device(light: &Peripheral) -> Result<bool, Box<dyn Error>> {
     const MAX_RETRIES: usize = 3;
     let mut retry_count = 0;
 
@@ -87,8 +44,8 @@ async fn connect_device(light: &Peripheral) -> Result<bool, Box<dyn Error>> {
     Ok(false)
 }
 
-async fn find_light(central: &Adapter) -> Option<Peripheral> {
-    const DEVICE_NAME: &str = "Bangle";
+/* Get device by name */
+pub async fn find_light(central: &Adapter, device_name: &str) -> Option<Peripheral> {
     const MAX_RETRIES: usize = 3;
     let mut retry_count = 0;
 
@@ -101,10 +58,8 @@ async fn find_light(central: &Adapter) -> Option<Peripheral> {
                             if properties
                                 .local_name
                                 .iter()
-                                .any(|name| name.contains(DEVICE_NAME))
+                                .any(|name| name.contains(&device_name))
                             {
-                                //println!("");
-                                //dbg!(&p.characteristics());
                                 return Some(p);
                             }
                         }
@@ -130,4 +85,12 @@ async fn find_light(central: &Adapter) -> Option<Peripheral> {
     }
 
     None
+}
+
+pub async fn is_device_connected(peripheral: &Peripheral) -> bool {
+    let is_connected_wrap = peripheral.is_connected().await;
+
+    let is_connected = is_connected_wrap.unwrap();
+
+    return is_connected;
 }

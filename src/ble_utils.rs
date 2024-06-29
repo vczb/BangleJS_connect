@@ -1,8 +1,10 @@
-use btleplug::api::{Central, Peripheral as _};
+use btleplug::api::{Central, Characteristic, Peripheral as _};
 use btleplug::platform::{Adapter, Peripheral};
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::time::Duration;
 use tokio::time;
+use uuid::Uuid;
 
 pub async fn connect_device(light: &Peripheral) -> Result<bool, Box<dyn Error>> {
     const MAX_RETRIES: usize = 3;
@@ -93,4 +95,18 @@ pub async fn is_device_connected(peripheral: &Peripheral) -> bool {
     let is_connected = is_connected_wrap.unwrap();
 
     return is_connected;
+}
+
+pub async fn find_bangle_characteristic(
+    characteristics: BTreeSet<Characteristic>,
+) -> Option<Characteristic> {
+    const NOTIFY_CHARACTERISTIC_UUID: Uuid =
+        Uuid::from_u128(0x6e400003_b5a3_f393_e0a9_e50e24dcca9e);
+
+    for characteristic in characteristics {
+        if characteristic.uuid == NOTIFY_CHARACTERISTIC_UUID {
+            return Some(characteristic);
+        }
+    }
+    None
 }

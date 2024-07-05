@@ -1,27 +1,34 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct Drag {
+pub struct Click {}
+#[derive(Serialize, Deserialize)]
+pub struct MouseMove {
     pub x: i32,
     pub y: i32,
     pub b: i32,
     pub dx: i32,
     pub dy: i32,
 }
-
 #[derive(Serialize, Deserialize)]
-pub struct Touch {}
-
-#[derive(Serialize, Deserialize)]
-pub struct Btn1 {}
+pub struct KeyPress {
+    pub keycode: Vec<i32>,
+}
+// TODO
+// #[derive(Serialize, Deserialize)]
+// pub struct Mic {}
+// #[derive(Serialize, Deserialize)]
+// pub struct Cam {}
+// #[derive(Serialize, Deserialize)]
+// pub struct Vol {}
 
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "event")]
 pub enum Events {
-    #[serde(rename = "touch")]
-    Touch(Touch),
-    #[serde(rename = "drag")]
-    Drag(Drag),
-    #[serde(rename = "btn1")]
-    Btn1(Btn1),
+    #[serde(rename = "click")]
+    Click(Click),
+    #[serde(rename = "mouse_move")]
+    MouseMove(MouseMove),
+    #[serde(rename = "keypress")]
+    KeyPress(KeyPress),
 }

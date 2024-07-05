@@ -8,6 +8,7 @@ use std::error::Error;
 
 mod actions;
 mod ble_utils;
+mod keyboard;
 mod mouse;
 mod notifications;
 mod types;

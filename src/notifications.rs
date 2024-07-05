@@ -30,8 +30,9 @@ pub async fn subscribe_and_notify(
                     Events::Click(_click) => {
                         handle_click();
                     }
-                    Events::KeyPress(_keys) => {
-                        handle_keypress();
+                    Events::KeyPress(keyboard) => {
+                        let key = keyboard.key;
+                        handle_keypress(&key);
                     }
                 },
                 Err(_e) => {

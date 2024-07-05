@@ -4,8 +4,12 @@ This project is a Rust-based application designed to interface with the Bangle J
 
 ## Features
 
-- Drag on the Bangle JS 2 screen to move the cursor on a connected device.
-- Touch the Bangle JS 2 screen to simulate a click on a connected device.
+- Mouse move
+- Keypress
+- Click
+- Printscren
+- Volume Control
+- Etc
 
 **Status:** Experimental
 

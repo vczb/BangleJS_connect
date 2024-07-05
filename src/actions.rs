@@ -1,13 +1,15 @@
 use crate::{
+    keyboard::keypress,
     mouse::{click_mouse, get_mouse_position, move_mouse},
     types::MouseMove,
 };
 
 pub fn handle_click() {
-    println!("handle_click");
     click_mouse("1");
 }
-pub fn handle_keypress() {}
+pub fn handle_keypress(key: &String) {
+    keypress(key);
+}
 
 pub fn handle_move(cursor: MouseMove) {
     let cursor_sensibility = 5;

@@ -12,15 +12,8 @@ pub struct MouseMove {
 }
 #[derive(Serialize, Deserialize)]
 pub struct KeyPress {
-    pub keycode: Vec<i32>,
+    pub key: String,
 }
-// TODO
-// #[derive(Serialize, Deserialize)]
-// pub struct Mic {}
-// #[derive(Serialize, Deserialize)]
-// pub struct Cam {}
-// #[derive(Serialize, Deserialize)]
-// pub struct Vol {}
 
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "event")]
